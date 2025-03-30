@@ -27,7 +27,7 @@ import io  # To handle BytesIO for downloading
 # Biopython imports
 from Bio import Entrez, SeqIO
 from Bio.Seq import Seq
-from Bio.SeqUtils import GC
+from Bio.SeqUtils import gc_fraction
 
 # TensorFlow / Keras imports
 import tensorflow as tf
@@ -367,11 +367,11 @@ def calculate_gc_content(sequences):
     for seq_str in sequences:
         if len(seq_str) > 0:
             try:
-                gc_contents.append(GC(Seq(seq_str)))
+                # multiply by 100 for percentage
+                gc_contents.append(gc_fraction(Seq(seq_str)) * 100) 
             except Exception as e:
-                 # Handle potential errors with non-standard characters if any slip through
                  st.warning(f"Could not calculate GC for sequence: {seq_str[:20]}... Error: {e}")
-                 gc_contents.append(np.nan) # Append NaN for problematic sequences
+                 gc_contents.append(np.nan)
         else:
             gc_contents.append(np.nan)
     return [gc for gc in gc_contents if not np.isnan(gc)] # Filter out NaN values
